@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agents</title>
+<style>
+@font-face{font-family:Outfit;src:url(/vendor/outfit.woff2) format("woff2");font-weight:100 900;font-display:swap}
+:root{
+  --ink:#0b0b0c; --ink2:#1b1b1e; --paper:#d3d1cc; --mut:#5f5d59; --soft:#8a8782; --acc:#ff6a1a;
+  --glass:rgba(255,255,255,.36); --edge:rgba(255,255,255,.7);
+  --opus1:#ff5a14; --opus2:#ffc79a; --fable1:#6c4bff; --fable2:#d2c6ff; --sonnet1:#1c8dff; --sonnet2:#c4e2ff; --haiku1:#8fcf00; --haiku2:#e8ff9c; --other1:#77757a; --other2:#dedcd8;
+  --sans:Outfit,Satoshi,Inter,"Adwaita Sans",system-ui,sans-serif;
+  --sheet:0px;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--paper);color:var(--ink);font:400 14px/1.45 var(--sans);overflow:hidden;-webkit-font-smoothing:antialiased}
+h1,h2,h3,p{margin:0;font-weight:inherit} button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+label,.lab{display:block;font-size:11px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--mut)}
+
+/* backdrop: brushed silver with a slow orange glow */
+#bg{position:fixed;inset:-80px;background:radial-gradient(110% 80% at 85% -10%,#f4f3f0 0%,transparent 55%),radial-gradient(80% 70% at -10% 110%,#a3a09a 0%,transparent 60%),linear-gradient(160deg,#dcdad5,#bfbcb6)}
+#bg i{position:absolute;border-radius:50%;filter:blur(90px);will-change:transform}
+.b1{width:620px;height:620px;right:12%;top:18%;background:radial-gradient(circle,#ff6a1a 0%,#ffb25e 45%,transparent 70%);opacity:.8}
+.b2{width:520px;height:520px;left:22%;bottom:8%;background:radial-gradient(circle,#ffd9a8 0%,transparent 70%);opacity:.75}
+.b3{width:460px;height:460px;left:38%;top:-6%;background:radial-gradient(circle,#fff 0%,transparent 70%);opacity:.8}
+#grain{position:fixed;inset:0;pointer-events:none;opacity:.22;mix-blend-mode:soft-light;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.glass{background:var(--glass);border:1px solid var(--edge);border-radius:28px;backdrop-filter:blur(26px) saturate(1.35);-webkit-backdrop-filter:blur(26px) saturate(1.35);box-shadow:0 24px 60px -28px rgba(60,35,10,.35),inset 0 1px 0 rgba(255,255,255,.5)}
+
+/* notch: the lead agent lives here */
+#notch{position:fixed;top:0;left:50%;z-index:30;height:48px;background:var(--ink);color:#fff;border-radius:0 0 26px 26px;display:flex;align-items:center;cursor:pointer;max-width:min(640px,60vw)}
+#notch::before,#notch::after{content:"";position:absolute;top:0;width:26px;height:26px}
+#notch::before{left:-26px;background:radial-gradient(circle at 0 100%,transparent 25.5px,var(--ink) 26px)}
+#notch::after{right:-26px;background:radial-gradient(circle at 100% 100%,transparent 25.5px,var(--ink) 26px)}
+.nin{display:flex;align-items:center;gap:10px;padding:0 24px;white-space:nowrap;min-width:0;font-size:13.5px}
+.nin b{font-weight:500} .nin span{color:#a5a3a0;overflow:hidden;text-overflow:ellipsis}
+.pulse{width:8px;height:8px;border-radius:50%;background:var(--acc);flex:none;box-shadow:0 0 0 0 var(--acc);animation:pulse 1.6s ease-out infinite}
+.quiet .pulse{background:#6a6a70;animation:none}
+@keyframes pulse{to{box-shadow:0 0 0 9px transparent}}
+
+#head{position:fixed;left:40px;top:34px;z-index:5;max-width:min(430px,30vw)}
+#head h1{font-size:clamp(40px,4.2vw,64px);font-weight:300;letter-spacing:-.035em;line-height:1.02;margin:8px 0 8px}
+#head p{color:var(--mut);font-size:15px}
+#pills{display:flex;gap:8px;margin-top:16px;overflow-x:auto;scrollbar-width:none}
+.pill{height:34px;padding:0 16px;border-radius:17px;border:1px solid rgba(11,11,12,.25);font-size:13px;white-space:nowrap;flex:none;max-width:190px;overflow:hidden;text-overflow:ellipsis;transition:background .25s,color .25s}
+.pill.on{background:var(--ink);color:#fff;border-color:var(--ink)} .pill:hover:not(.on){background:rgba(255,255,255,.5)}
+#tr{position:fixed;right:32px;top:26px;z-index:5;display:flex;gap:8px;transition:opacity .4s}
+#conn{display:flex;align-items:center;gap:8px;cursor:default} #conn i{width:7px;height:7px;border-radius:50%;background:#2fbf5b} #conn.off i{background:#e5484d}
+
+.col{position:fixed;z-index:5;width:272px;display:flex;flex-direction:column;gap:16px;transition:opacity .45s}
+#colL{left:32px;top:max(248px,27vh)} #colR{right:32px;top:92px}
+.card{padding:20px 22px}
+.big{font-size:84px;font-weight:300;letter-spacing:-.05em;line-height:.95}
+.mid{font-size:46px;font-weight:300;letter-spacing:-.04em;line-height:1.05;font-variant-numeric:tabular-nums}
+.card small{display:block;color:var(--mut);font-size:13px;margin-top:4px}
+.row{display:flex;align-items:flex-end;justify-content:space-between;margin-top:8px}
+#arc path{fill:none;stroke-width:7;stroke-linecap:round} #arc .t{stroke:rgba(11,11,12,.12)} #arc .p{stroke:var(--ink)}
+#spark{display:block;width:100%;height:54px;margin-top:10px}
+#quote{font-size:15.5px;line-height:1.5;margin-top:10px;display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
+#qwho{margin-top:10px}
+
+/* agents hang from the notch */
+#wires{position:fixed;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
+#wires path{fill:none;stroke:rgba(11,11,12,.3);stroke-width:1.4}
+#wires .flow{stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-dasharray:1 13;animation:flow .8s linear infinite;display:none}
+#wires .active .flow{display:block}
+@keyframes flow{to{stroke-dashoffset:-14}}
+#stage{position:fixed;inset:0;z-index:3}
+.ag{position:absolute;left:0;top:0;width:160px;cursor:pointer;will-change:transform;text-align:center}
+.cap{height:228px;background:var(--ink);border-radius:46px;padding:9px 9px 0;display:flex;flex-direction:column;transition:transform .35s cubic-bezier(.2,.9,.3,1.4),box-shadow .3s;box-shadow:0 26px 40px -22px rgba(20,10,0,.55)}
+.ag:hover .cap{transform:translateY(-5px) scale(1.025)}
+.ag.sel .cap{box-shadow:0 0 0 4px var(--paper),0 0 0 6.5px var(--ink),0 30px 44px -22px rgba(20,10,0,.6)}
+.well{flex:1;position:relative;border-radius:38px;overflow:hidden}
+.fill{position:absolute;left:0;right:0;bottom:0;height:12%;border-radius:38px;background:linear-gradient(180deg,var(--c1),var(--c2));overflow:hidden}
+.fill::after{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.55) 1px,transparent 1.4px);background-size:7px 7px;mask-image:linear-gradient(180deg,transparent 15%,#000);-webkit-mask-image:linear-gradient(180deg,transparent 15%,#000)}
+.active .fill::after{animation:rise 1.4s linear infinite}
+.think .fill{animation:breathe 2.4s ease-in-out infinite}
+.waiting .fill,.idle .fill{filter:saturate(.25) brightness(.8)}
+@keyframes rise{to{background-position:0 -14px}} @keyframes breathe{50%{opacity:.55}}
+.done .fill{background:var(--ink2)} .done .fill::after{display:none}
+.well svg{position:absolute;left:50%;top:50%;width:44px;margin:-22px;stroke:#fff;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round;display:none}
+.done .well svg{display:block;stroke-dasharray:30;animation:draw .6s ease-out both}
+@keyframes draw{from{stroke-dashoffset:30}}
+.tm{height:40px;display:grid;place-items:center;color:#fff;font-size:15px;font-variant-numeric:tabular-nums;letter-spacing:.01em}
+.nm{margin-top:14px;font-size:15px;font-weight:500;line-height:1.25;letter-spacing:-.01em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.mm{margin-top:5px;font-size:12.5px;color:var(--mut);white-space:nowrap}
+.mm i{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--c1);margin-right:6px}
+.stp{margin-top:4px;font-size:12.5px;color:var(--soft);line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ag.hub .cap{display:block;height:48px;line-height:48px;border-radius:24px;padding:0 18px;color:#fff;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .ag.hub .well,.ag.hub .tm{display:none}
+#hint{position:fixed;z-index:4;font-size:12px;color:var(--mut);transform:translateX(-50%);white-space:nowrap;transition:opacity .4s}
+
+/* dock: last ten minutes */
+#dock{position:fixed;z-index:6;left:328px;right:calc(328px + var(--sheet));bottom:16px;background:var(--ink);color:#fff;border-radius:30px;padding:16px 18px 16px 22px;transition:right .7s cubic-bezier(.3,1,.3,1);box-shadow:0 30px 60px -24px rgba(20,10,0,.6)}
+.dh{display:flex;align-items:baseline;gap:14px;font-size:15px}
+.dh span{color:#8d8b88;font-size:12.5px} .dh div{margin-left:auto;display:flex;gap:14px;color:#a5a3a0;font-size:12px}
+.dh i{display:inline-block;width:3px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+#feed{display:flex;flex-direction:row-reverse;justify-content:flex-end;gap:12px;overflow:hidden;margin-top:10px;min-height:104px}
+#feed.none::after{content:"No notes yet. They appear as soon as an agent says what it is doing.";color:#8d8b88;font-size:13.5px;align-self:center}
+.note{flex:none;width:286px;height:104px;background:#19191c;border-radius:20px;padding:13px 16px;cursor:pointer;overflow:hidden;transition:background .2s}
+.note:hover{background:#232327}
+.nh{display:flex;align-items:center;gap:8px;font-size:12px;color:#8d8b88;white-space:nowrap}
+.nh i{width:7px;height:7px;border-radius:50%;background:var(--c1);flex:none}
+.nh b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;font-weight:500;color:#d9d7d3}
+.note p{margin-top:7px;font-size:13.5px;line-height:1.4;color:#fff;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+#files{margin-top:10px;display:flex;flex-direction:column;gap:9px}
+#files div{display:flex;align-items:center;gap:9px;font-size:14px;min-width:0}
+#files i{width:7px;height:7px;border-radius:50%;background:var(--c1);flex:none}
+#files span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#files time{color:var(--mut);font-size:12px;white-space:nowrap} #files p{color:var(--mut)}
+
+/* detail sheet */
+#sheet{position:fixed;z-index:20;top:16px;right:16px;bottom:16px;width:420px;border-radius:34px;background:rgba(255,255,255,.62);padding:22px 24px 26px;overflow-y:auto;scrollbar-width:none;visibility:hidden}
+.shTop{display:flex;align-items:center;gap:8px;margin-bottom:22px}
+.tag{height:30px;padding:0 13px;border-radius:15px;display:inline-flex;align-items:center;gap:7px;font-size:12.5px;border:1px solid rgba(11,11,12,.2);white-space:nowrap}
+.tag.k{background:var(--ink);color:#fff;border-color:var(--ink)} .tag.k i{width:7px;height:7px;border-radius:50%;background:var(--c1)}
+.x{margin-left:auto;width:38px;height:38px;border-radius:50%;background:var(--ink);display:grid;place-items:center;transition:transform .3s cubic-bezier(.2,.9,.3,1.6)} .x:hover{transform:rotate(90deg) scale(1.08)}
+.x svg{width:14px;stroke:#fff;stroke-width:2.4;stroke-linecap:round;fill:none;stroke-linejoin:round}
+.x.nv{margin-left:0;background:rgba(255,255,255,.7)} .x.nv svg{stroke:var(--ink)} .x.nv:hover{transform:scale(1.1)} #prev{margin-left:auto} #close{margin-left:6px}
+.more{margin-top:16px;display:flex;flex-direction:column;gap:1px;border-radius:22px;overflow:hidden}
+.more div{background:rgba(255,255,255,.62);padding:13px 16px} .more p{font-size:14.5px;line-height:1.4;margin-top:3px}
+.go{margin-top:14px;height:42px;padding:0 20px;border-radius:21px;background:var(--ink);color:#fff;font-size:14px;transition:transform .3s cubic-bezier(.2,.9,.3,1.6)} .go:hover{transform:scale(1.04)}
+#sheet h2{font-size:32px;font-weight:400;letter-spacing:-.03em;line-height:1.1;margin-bottom:24px}
+.job{font-size:19px;font-weight:300;line-height:1.42;letter-spacing:-.01em;margin-top:8px}
+.pend{color:var(--mut);animation:breathe 1.4s ease-in-out infinite}
+.link{margin-top:10px;font-size:13px;color:var(--mut);text-decoration:underline;text-underline-offset:3px} .link:hover{color:var(--ink)}
+.brief{margin-top:12px;padding:16px;background:rgba(255,255,255,.6);border-radius:20px;max-height:300px;overflow:auto;font-size:13px}
+.brief h4{margin:14px 0 4px;font-size:12px;font-weight:600} .brief h4:first-child{margin-top:0} .brief p{color:var(--mut);white-space:pre-wrap;word-break:break-word;line-height:1.5}
+code{font:12px ui-monospace,monospace;background:rgba(11,11,12,.07);border-radius:5px;padding:1px 5px;word-break:break-all}
+.now{margin-top:24px;background:var(--ink);color:#fff;border-radius:26px;padding:18px 20px}
+.now label{color:#8d8b88;display:flex;align-items:center;gap:8px}
+.now p{font-size:16px;line-height:1.4;margin-top:8px;word-break:break-word} .now b{font-weight:500} .now small{display:block;color:#8d8b88;font-size:12.5px;margin-top:6px}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.duo div{background:rgba(255,255,255,.7);border-radius:24px;padding:16px 18px} .duo b{display:block;font-size:30px;font-weight:300;letter-spacing:-.03em;margin-top:4px;font-variant-numeric:tabular-nums}
+.story{margin-top:10px;display:flex;flex-direction:column;gap:8px}
+.story div{display:grid;grid-template-columns:42px 1fr;gap:8px;font-size:13px;color:var(--mut);padding:2px 0}
+.story time{color:var(--soft);font-size:12px;font-variant-numeric:tabular-nums;padding-top:1px}
+.story .say{background:rgba(255,255,255,.72);border-radius:18px;padding:12px 14px;color:var(--ink);font-size:14px;line-height:1.45}
+.story .say span{display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
+.sec{margin-top:26px}
+
+#empty{position:fixed;inset:0;display:none;place-items:center;text-align:center;z-index:4}
+#empty h2{font-size:76px;font-weight:300;letter-spacing:-.04em} #empty p{color:var(--mut);font-size:16px;margin-top:6px}
+.empty #empty{display:grid} .empty .live{display:none!important}
+body.open #colR,body.open #tr{opacity:0;pointer-events:none}
+@media (max-width:1250px){#colR{display:none}#dock{right:calc(24px + var(--sheet))}}
+@media (max-width:980px){#colL{display:none}#dock{left:16px}#head{max-width:44vw}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div id="bg"><i class="b1"></i><i class="b2"></i><i class="b3"></i></div><div id="grain"></div>
+<svg id="wires"></svg>
+<div id="stage" class="live"></div>
+<div id="hint" class="live">A fuller capsule means a busier agent</div>
+
+<div id="notch"><div class="nin"><i class="pulse"></i><b id="nlead"></b><span id="nstep"></span></div></div>
+
+<header id="head" class="live"><span class="lab">Session</span><h1 id="st"></h1><p id="ss"></p><div id="pills"></div></header>
+<div id="tr"><button class="pill" id="finb">Show finished</button><span class="pill" id="conn"><i></i><span>Live</span></span></div>
+
+<div class="col live" id="colL">
+  <div class="card glass"><label>Working now</label>
+    <div class="row"><span class="big" id="k1">0</span>
+      <svg id="arc" width="116" height="66" viewBox="0 0 116 66"><path class="t" d="M8 60A50 50 0 0 1 108 60"/><path class="p" d="M8 60A50 50 0 0 1 108 60" stroke-dasharray="157.1" stroke-dashoffset="157.1"/></svg></div>
+    <small id="k1s"></small></div>
+  <div class="card glass"><label>Steps taken</label><div class="mid" id="k3">0</div><canvas id="spark"></canvas></div>
+</div>
+<div class="col live" id="colR">
+  <div class="card glass"><label>Running for</label><div class="mid" id="k4">0s</div><small id="k4s"></small></div>
+  <div class="card glass"><label>Files being changed</label><div id="files"></div></div>
+</div>
+
+<div id="dock" class="live">
+  <div class="dh">Live feed <span>what your agents are saying, newest first · click one to open that agent</span></div>
+  <div id="feed"></div>
+</div>
+
+<aside id="sheet" class="glass"></aside>
+<div id="empty"><div><h2>All quiet</h2><p>Agents drop in here the moment a Claude Code session starts one.</p></div></div>
+
+<script src="/vendor/gsap.min.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const inl = s => esc(s).replace(/`([^`\n]+)`/g, '<code>$1</code>').replace(/\*\*([^*\n]+)\*\*/g, '<b>$1</b>');
+const FAMS = ['fable', 'opus', 'sonnet', 'haiku', 'other'];
+const fam = m => FAMS.find(k => (m || '').includes(k)) || 'other';
+const tint = (el, a) => { const f = a.hub ? 'other' : fam(a.model); el.style.setProperty('--c1', `var(--${f}1)`); el.style.setProperty('--c2', `var(--${f}2)`); };
+const mname = m => !m ? 'Starting' : m.replace(/^claude-/, '').replace(/-\d{8}$/, '').replace(/^([a-z]+)-(.+)$/, (_, a, b) => a[0].toUpperCase() + a.slice(1) + ' ' + b.replace(/-/g, '.'));
+const dur = ms => { const s = Math.max(0, ms / 1000 | 0), h = s / 3600 | 0, m = s % 3600 / 60 | 0; return h ? `${h}h ${m}m` : m ? `${m}m ${String(s % 60).padStart(2, '0')}s` : `${s}s`; };
+const clock = ms => { const s = Math.max(0, ms / 1000 | 0), h = s / 3600 | 0, m = s % 3600 / 60 | 0, p = n => String(n).padStart(2, '0'); return h ? `${h}:${p(m)}:${p(s % 60)}` : `${m}:${p(s % 60)}`; };
+const short = ms => { const s = ms / 1000 | 0; return s < 60 ? s + 's' : s < 3600 ? (s / 60 | 0) + 'm' : (s / 3600 | 0) + 'h ' + (s % 3600 / 60 | 0) + 'm'; };
+const fmt = n => Math.round(n).toLocaleString();
+const WIN = 10 * 60e3, LINGER = 8000, CW = 160, CH = 336, GX = 36, GY = 46;
+const LANE = { col: ['#4c4b51', '#77757c', '#f4f3f1', '#f4f3f1', '#ff7a2f', '#ffc98a', '#ffc98a'], h: [3, 5, 9, 9, 18, 13, 13] };
+const CHECK = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+
+const VERB = { Bash: 'Running a command:', Monitor: 'Waiting on a command:', Read: 'Reading', Edit: 'Editing', Write: 'Writing', NotebookEdit: 'Editing',
+  Grep: 'Searching the code for', Glob: 'Looking for files:', WebSearch: 'Searching the web for', WebFetch: 'Reading a web page', ToolSearch: 'Looking for a tool',
+  Agent: 'Handing work to a helper:', Task: 'Handing work to a helper:', Workflow: 'Starting a group of helpers', SendMessage: 'Messaging a helper', Skill: 'Loading know-how:', SubagentHandback: 'Reporting back to the lead' };
+const NODETAIL = /^(SubagentHandback|WebFetch|ToolSearch|Workflow|SendMessage)$/;
+const human = x => !x ? ['Starting up…', ''] : x.k === 'think' ? ['Thinking', ''] : x.k === 'text' ? ['', x.s] :
+  [VERB[x.name] || 'Using ' + (x.name.startsWith('mcp__') ? x.name.split('__')[1] : x.name), NODETAIL.test(x.name) ? '' : x.s || ''];
+const actHtml = x => { const [v, d] = human(x); return (v ? `<b>${esc(d ? v : v.replace(/:$/, ''))}</b> ` : '') + esc(d); };
+const actText = x => { const [v, d] = human(x); return ((d ? v : v.replace(/:$/, '')) + ' ' + d).trim(); };
+const plural = (n, w) => n + ' ' + w + (n === 1 ? '' : 's');
+function story(acts) {
+  const rows = []; let g = null;
+  for (const x of acts) {
+    if (x.k === 'text') { if (g) rows.push(g); g = null; rows.push({ ts: x.ts, say: x.s }); continue; }
+    g = g || { n: {} }; g.ts = x.ts;
+    const k = x.k === 'think' ? 'think' : x.c === 4 ? 'edit' : x.c === 2 || x.c === 3 ? 'read' : x.c === 6 ? 'hand' : 'run';
+    g.n[k] = (g.n[k] || 0) + 1;
+  }
+  if (g) rows.push(g);
+  return rows.reverse().slice(0, 8).map(r => {
+    if (r.say) return r;
+    const n = r.n, parts = [n.run && 'ran ' + plural(n.run, 'command'), n.edit && 'made ' + plural(n.edit, 'edit'), n.read && 'read ' + plural(n.read, 'file'), n.hand && 'handed off ' + plural(n.hand, 'task')].filter(Boolean);
+    const t = parts.length ? parts.join(', ') : 'thinking it over';
+    return { ts: r.ts, did: t[0].toUpperCase() + t.slice(1) };
+  });
+}
+const cap = h => h[0] + h.slice(1).toLowerCase();
+function briefHtml(t) {
+  const out = []; let c = { h: '', l: [] };
+  for (const ln of t.split('\n')) {
+    const m = ln.match(/^\s*(?:#+\s*)?([A-Z][A-Z0-9 \/&'’-]{2,40}):\s*(.*)$/) || ln.match(/^\s*#+\s+(.{2,60})()$/);
+    if (m) { if (c.h || c.l.join('').trim()) out.push(c); c = { h: m[1], l: [m[2]] }; } else c.l.push(ln);
+  }
+  out.push(c);
+  return out.map(x => (x.h ? `<h4>${esc(cap(x.h))}</h4>` : '') + `<p>${inl(x.l.join('\n').trim())}</p>`).join('') + (t.length >= 6000 ? '<p>…</p>' : '');
+}
+
+// ---------- state ----------
+let data = null, skew = 0, sel = null, pin = null, cur = null, briefOpen = false, booted = false, annUntil = 0, items = new Map();
+const wasRunning = new Set(), doneAt = new Map(), known = new Set(), nodeEls = new Map(), wireEls = new Map(), laneEls = new Map(), pillEls = new Map();
+const running = a => a.status === 'active' || a.status === 'waiting';
+const cls = a => a.status + (a.status === 'active' && a.activity.at(-1)?.k === 'think' ? ' think' : '');
+const label = (a, now) => a.sessionHub && a.status !== 'active' ? (a.status === 'waiting' ? 'Waiting on its helpers' : 'Idle') : a.type === 'main' && a.status !== 'active' ? 'Waiting on its helpers' : a.status === 'done' ? 'Finished' : a.status === 'waiting' ? 'Quiet for ' + short(now - a.last) : a.status === 'idle' ? 'Idle' : a.activity.at(-1)?.k === 'think' ? 'Thinking' : 'Working';
+const setc = (el, c) => { if (el.className !== c) el.className = c; };
+const sett = (el, t) => { if (el.textContent !== t) el.textContent = t; };
+const seth = (el, h) => { if (el._h !== h) { el._h = h; el.innerHTML = h; return true; } };
+function recon(parent, map, list, make, upd) {
+  const seen = new Set();
+  for (const it of list) { let el = map.get(it.key); if (!el) { el = make(it); map.set(it.key, el); parent.appendChild(el); } upd(el, it); seen.add(it.key); }
+  for (const [k, el] of map) if (!seen.has(k)) { gsap.killTweensOf(el); el.remove(); map.delete(k); }
+}
+function count(el, to, f = fmt) { if (el._to === to) return; el._to = to; el._o = el._o || { v: 0 }; gsap.to(el._o, { v: to, duration: 1.1, ease: 'power3.out', onUpdate: () => el.textContent = f(el._o.v) }); }
+
+$('finb')._on = localStorage.fin === '1';
+$('finb').onclick = () => { $('finb')._on = !$('finb')._on; localStorage.fin = $('finb')._on ? '1' : '0'; render(); };
+const es = new EventSource('/events');
+es.onmessage = e => { data = JSON.parse(e.data); skew = Date.now() - data.now; conn(true); render(); };
+es.onerror = () => conn(false);
+const conn = ok => { setc($('conn'), 'pill' + (ok ? '' : ' off')); sett($('conn').lastChild, ok ? 'Live' : 'Reconnecting'); };
+setInterval(() => data && render(), 1000);
+addEventListener('resize', () => data && render());
+addEventListener('keydown', e => { if (e.key === 'Escape') pick(null); if (e.key === 'ArrowRight') step(1); if (e.key === 'ArrowLeft') step(-1); });
+function step(d) {
+  if (!cur) return;
+  const order = [...(cur.s.all ? [] : ['root']), ...cur.list.filter(a => !a.hub).map(a => a.id)].map(id => cur.s.key + '#' + id), i = order.indexOf(sel);
+  if (order.length) { sel = order[i < 0 ? 0 : (i + d + order.length) % order.length]; briefOpen = false; render(); }
+}
+document.addEventListener('click', e => {
+  if (e.target.id === 'bt') { briefOpen = !briefOpen; sheetSig = ''; return render(); }
+  if (e.target.closest('#close')) return pick(null);
+  if (e.target.closest('#prev')) return step(-1);
+  if (e.target.closest('#next')) return step(1);
+  if (e.target.id === 'opens') { pin = items.get(sel).a.skey; sel = null; return render(); }
+  const p = e.target.closest('.pill[data-s]'); if (p) { pin = p.dataset.s; sel = null; return render(); }
+  if (e.target.closest('#notch')) return cur && !cur.s.all && pick(cur.s.key + '#root');
+  const k = e.target.closest('[data-key]'), hub = k && items.get(k.dataset.key)?.a;
+  if (k) return pick(k.dataset.key === sel ? null : k.dataset.key);
+  if (e.target.id === 'stage') pick(null);
+});
+function pick(k) { sel = k; briefOpen = false; render(); }
+
+// One synthetic "session" holding every live session: each real session becomes a small hub under the notch.
+function buildAll(views) {
+  const list = [], agents = []; let n = 0;
+  for (const v of views) {
+    const sk = v.s.key, ids = new Set(v.list.map(a => a.id)), hub = 'S|' + sk;
+    list.push({ ...v.s.root, id: hub, type: 'lead', sessionHub: true, skey: sk, desc: v.s.title, parent: 'root', started: v.s.root.started || 0 });
+    for (const a of v.list) list.push({ ...a, id: sk + '|' + a.id, parent: ids.has(a.parent) ? sk + '|' + a.parent : hub });
+    for (const a of v.s.agents) agents.push(a);
+    n += v.n;
+  }
+  const roots = views.map(v => v.s.root);
+  const root = { id: 'root', type: 'main', status: 'waiting', model: null, activity: [], hist: [], tools: roots.reduce((t, r) => t + r.tools, 0), started: 0 };
+  return { s: { key: '*', all: true, project: 'All sessions', title: `${views.length} Claude Code sessions, leads and helpers together`, root, agents }, list, n };
+}
+
+// ---------- render ----------
+function render() {
+  const now = Date.now() - skew, showDone = $('finb')._on;
+  const views = []; items = new Map();
+  for (const s of data.sessions) {
+    const list = [];
+    for (const a of s.agents) {
+      const key = s.key + '#' + a.id;
+      if (a.hub) { list.push(a); continue; }
+      if (running(a)) { if (!known.has(key)) { known.add(key); if (booted) announce('New helper · ' + a.desc); } wasRunning.add(key); doneAt.delete(key); list.push(a); continue; }
+      if (a.status !== 'done') continue;
+      if (wasRunning.delete(key)) { doneAt.set(key, now); announce('Finished · ' + a.desc); }
+      const t = doneAt.get(key); if (t && now - t > LINGER) doneAt.delete(key);
+      if (showDone || doneAt.has(key)) { a._out = !showDone && now - doneAt.get(key) > LINGER - 700; list.push(a); }
+    }
+    const real = list.filter(a => !a.hub);
+    const used = new Set(real.map(a => a.parent));
+    const shown = list.filter(a => !a.hub || used.has(a.id)).sort((a, b) => (a.started || 0) - (b.started || 0) || (a.id < b.id ? -1 : 1));
+    const h = real.filter(running).length, v = { s, list: shown, h, n: h + (s.root.status === 'active') }; views.push(v);
+    for (const a of [s.root, ...shown]) items.set(s.key + '#' + a.id, { a, v, key: s.key + '#' + a.id });
+  }
+  views.sort((a, b) => b.n - a.n || b.s.last - a.s.last);
+  const allView = views.length > 1 ? buildAll(views) : null;
+  if (allView) for (const a of allView.list) items.set('*#' + a.id, { a, v: allView, key: '*#' + a.id });
+  cur = views.find(v => v.s.key === pin) || allView || views[0] || null;
+  if (sel && (!items.has(sel) || items.get(sel).v !== cur)) sel = null;
+  document.body.classList.toggle('empty', !cur);
+  sett($('finb'), showDone ? 'Hide finished' : 'Show finished'); $('finb').classList.toggle('on', showDone);
+  sheet(now);
+  if (!cur) { setc($('notch'), 'quiet'); if (now > annUntil) { sett($('nlead'), 'No agents running'); sett($('nstep'), ''); } recon($('stage'), nodeEls, [], 0, 0); recon($('wires'), wireEls, [], 0, 0); boot(); return; }
+
+  const s = cur.s, real = s.agents.filter(a => !a.hub), all = [s.root, ...real], r = s.root;
+  sett($('st'), s.project); sett($('ss'), s.title);
+  recon($('pills'), pillEls, allView ? [allView, ...views].map(v => ({ key: v.s.key, v })) : [], it => { const b = document.createElement('button'); b.dataset.s = it.key; return b; },
+    (b, { v }) => { setc(b, 'pill' + (v === cur ? ' on' : '')); const dup = views.filter(o => o.s.project === v.s.project).length > 1; sett(b, `${v.s.all ? 'All sessions' : dup ? v.s.title : v.s.project} · ${v.n}`); b.title = v.s.title; });
+  if (now > annUntil && s.all) { setc($('notch'), ''); sett($('nlead'), 'All sessions'); sett($('nstep'), `${plural(cur.n, 'agent')} working`); }
+  else if (now > annUntil) { setc($('notch'), r.status === 'active' ? '' : 'quiet'); sett($('nlead'), mname(r.model) + ' is leading'); sett($('nstep'), r.status === 'active' ? actText(r.activity.at(-1)) : cur.h ? `waiting on ${plural(cur.h, 'helper')}` : 'idle'); }
+
+  const fin = real.filter(a => a.status === 'done').length;
+  count($('k1'), cur.n); sett($('k1s'), `${fin} of ${real.length} finished`);
+  const off = 157.1 * (1 - (real.length ? fin / real.length : 0)), arc = $('arc').lastElementChild;
+  if (arc._o !== off) { arc._o = off; gsap.to(arc, { attr: { 'stroke-dashoffset': off }, duration: 1.2, ease: 'power3.out' }); }
+  count($('k3'), all.reduce((t, a) => t + a.tools, 0));
+  sett($('k4'), dur(now - (real.length ? Math.min(...real.map(a => a.started || now)) : s.root.last || now)));
+  sett($('k4s'), real.length ? 'since the first helper started' : 'since the lead last did something');
+  feed(now); files(now);
+  stage(now); boot();
+}
+
+// ---------- live feed + files ----------
+const feedEls = new Map(); let feedFor = null;
+const ago = (now, ts) => now - ts < 60e3 ? 'just now' : short(now - ts) + ' ago';
+const who = a => a.type === 'main' ? 'Lead agent' : a.sessionHub ? a.desc + ' · lead' : a.desc;
+function feed(now) {
+  const s = cur.s, src = s.all ? cur.list : [s.root, ...cur.list], notes = [], animate = booted && feedFor === s.key; feedFor = s.key;
+  for (const a of src) if (!a.hub) for (const x of a.activity || []) if (x.k === 'text') notes.push({ key: s.key + '#' + a.id + '@' + x.ts, ak: s.key + '#' + a.id, a, x });
+  notes.sort((p, q) => p.x.ts - q.x.ts);
+  recon($('feed'), feedEls, notes.slice(-8), it => {
+    const el = document.createElement('div'); el.className = 'note'; el.dataset.key = it.ak; tint(el, it.a);
+    el.innerHTML = `<div class="nh"><i></i><b>${esc(who(it.a))}</b><time></time></div><p>${esc(it.x.s)}</p>`;
+    if (animate) gsap.from(el, { width: 0, opacity: 0, paddingLeft: 0, paddingRight: 0, marginRight: -12, duration: .8, ease: 'power3.out' });
+    return el;
+  }, (el, it) => sett(el.querySelector('time'), ago(now, it.x.ts)));
+  $('feed').classList.toggle('none', !notes.length);
+}
+function files(now) {
+  const s = cur.s, src = s.all ? cur.list : [s.root, ...cur.list], m = new Map();
+  for (const a of src) for (const [n, ts] of a.files || []) { const p = m.get(n); if (!p || ts > p.ts) m.set(n, { n, ts, a }); }
+  seth($('files'), [...m.values()].sort((p, q) => q.ts - p.ts).slice(0, 6).map(f => `<div style="--c1:var(--${fam(f.a.model)}1)" title="${esc(who(f.a))}"><i></i><span>${esc(f.n)}</span><time>${ago(now, f.ts)}</time></div>`).join('') || '<p>Nothing written yet.</p>');
+}
+
+// ---------- agents hanging from the notch ----------
+function stage(now) {
+  const s = cur.s, list = cur.list, ids = new Set(list.map(a => a.id)), kids = new Map();
+  for (const a of list) { const p = ids.has(a.parent) ? a.parent : 'root'; a._p = p; (kids.get(p) || kids.set(p, []).get(p)).push(a); }
+  const hint = $('hint'); sett(hint, list.length ? ('Click an agent for details · ← → moves between them · a fuller capsule is a busier agent') : 'This session has no helpers running, the lead is working alone');
+  if (!list.length) { hint.style.left = '50%'; hint.style.top = '46%'; recon($('stage'), nodeEls, [], 0, 0); recon($('wires'), wireEls, [], 0, 0); return; }
+  let leaf = 0, maxD = 1; const pos = new Map();
+  const place = (a, d) => { maxD = Math.max(maxD, d); const k = kids.get(a.id); let x;
+    if (k) { const xs = k.map(c => place(c, d + 1)); x = (xs[0] + xs.at(-1)) / 2; } else x = leaf++ * (CW + GX);
+    pos.set(a.id, { x, d }); return x; };
+  (kids.get('root') || []).forEach(a => place(a, 1));
+  const W = innerWidth, open = !!sel, rc = id => { const e = $(id); return getComputedStyle(e).display === 'none' ? null : e.getBoundingClientRect(); };
+  const L = rc('colL'), R = rc('colR'), D = $('dock').getBoundingClientRect();
+  const left = (L ? L.right : 0) + 28, right = open ? W - 464 : (R ? R.left : W) - 28, top = 104, bottom = D.top - 44;
+  const tall = []; for (const a of list) if (!a.hub) tall[pos.get(a.id).d] = 1;
+  const yo = [0, 0]; for (let d = 1; d <= maxD; d++) yo[d + 1] = yo[d] + (tall[d] ? CH : 84) + GY;
+  const bw = leaf * (CW + GX) - GX, bh = yo[maxD + 1] - GY;
+  const sc = Math.max(.34, Math.min(1.12, (right - left) / bw, (bottom - top) / bh));
+  const ox = (left + right) / 2 - bw * sc / 2, oy = top + Math.max(0, (bottom - top - bh * sc)) * .42;
+  hint.style.left = (left + right) / 2 + 'px'; hint.style.top = Math.min(bottom + 12, oy + bh * sc + 10) + 'px';
+
+  let fresh = 0;
+  recon($('stage'), nodeEls, list.map(a => ({ key: s.key + '#' + a.id, a })), it => {
+    const el = document.createElement('div'); el.dataset.key = it.key;
+    el.innerHTML = it.a.hub ? '<div class="cap"></div><div class="mm"><span></span></div>' : `<div class="cap"><div class="well"><div class="fill"></div>${CHECK}</div><div class="tm"></div></div><div class="nm"></div><div class="mm"><i></i><span></span></div><div class="stp"></div>`;
+    gsap.set(el, { x: innerWidth / 2 - CW * sc / 2, y: -60, scale: sc * .3, opacity: 0, transformOrigin: '0 0' });
+    return el;
+  }, (el, { key, a }) => {
+    const p = pos.get(a.id), x = Math.round(ox + p.x * sc), y = Math.round(oy + yo[p.d] * sc), t = `${x},${y},${sc.toFixed(3)}`;
+    el._a = a; setc(el, `ag ${cls(a)}${a.hub ? ' hub' : ''}${sel === key ? ' sel' : ''}`); tint(el, a);
+    if (a._out) { if (!el._leaving) { el._leaving = 1; gsap.to(el, { opacity: 0, y: '+=50', scale: sc * .7, duration: .6, ease: 'power2.in', overwrite: true }); } return; }
+    if (el._t !== t) { const isNew = !el._t; el._t = t; gsap.to(el, { x, y, scale: sc, opacity: 1, duration: isNew ? 1.1 : .9, ease: isNew ? 'back.out(1.5)' : 'power3.out', delay: isNew ? .07 * fresh++ : 0, overwrite: true }); }
+    if (a.hub) { sett(el.firstChild, a.sessionHub ? a.desc : 'Group of helpers'); sett(el.querySelector('.mm span'), a.sub || ''); return; }
+    const busy = a.hist.reduce((n, h) => n + (h[0] > now - 60e3), 0), lvl = a.status === 'done' ? 100 : a.status !== 'active' ? 9 : Math.min(100, 24 + busy * 9);
+    if (el._lvl !== lvl) { el._lvl = lvl; gsap.to(el.querySelector('.fill'), { height: lvl + '%', duration: 1.4, ease: 'elastic.out(1,.75)' }); }
+    sett(el.querySelector('.tm'), a.started ? clock((running(a) ? now : a.last) - a.started) : '');
+    sett(el.querySelector('.nm'), a.desc); sett(el.querySelector('.mm span'), `${mname(a.model)} · ${label(a, now)}`);
+    sett(el.querySelector('.stp'), a.status === 'active' ? actText(a.activity.at(-1)) : '');
+  });
+  recon($('wires'), wireEls, list.map(a => ({ key: s.key + '#' + a.id, a })), () => { const g = document.createElementNS('http://www.w3.org/2000/svg', 'g'); g.innerHTML = '<path/><path class="flow"/>'; return g; },
+    (g, { a }) => { const c = a.status === 'active' ? 'active' : ''; if (g.getAttribute('class') !== c) g.setAttribute('class', c); g._a = a; });
+}
+
+// ---------- detail sheet ----------
+let sheetSig = '', sheetOpen = false, sheetKey = null;
+function sheet(now) {
+  const el = $('sheet'), it = sel && items.get(sel);
+  if (!!it !== sheetOpen) {
+    sheetOpen = !!it; document.body.classList.toggle('open', sheetOpen);
+    document.documentElement.style.setProperty('--sheet', sheetOpen ? '124px' : '0px');
+    gsap.to(el, sheetOpen ? { x: 0, autoAlpha: 1, duration: .8, ease: 'expo.out', overwrite: true } : { x: 470, autoAlpha: 0, duration: .5, ease: 'power3.in', overwrite: true });
+  }
+  if (!it) { sheetSig = ''; sheetKey = null; return; }
+  const { a, key } = it, lead = a.type === 'main' || a.sessionHub, last = a.activity.at(-1);
+  const sig = [key, a.summary, a.goal, cur.s.all, a.summarizing, a.status, a.activity.length, last?.ts, a.tools, a.model, briefOpen].join('|');
+  if (sig !== sheetSig) {
+    const keep = sheetKey === key ? el.scrollTop : 0; sheetSig = sig; tint(el, a);
+    el.innerHTML = `
+      <div class="shTop"><span class="tag k"><i></i>${esc(mname(a.model))}</span><span class="tag" id="ist"></span><button class="x nv" id="prev" aria-label="Previous agent"><svg viewBox="0 0 14 14"><path d="M9 2L4 7l5 5"/></svg></button><button class="x nv" id="next" aria-label="Next agent"><svg viewBox="0 0 14 14"><path d="M5 2l5 5-5 5"/></svg></button><button class="x" id="close" aria-label="Close"><svg viewBox="0 0 14 14"><path d="M2 2l10 10M12 2L2 12"/></svg></button></div>
+      <h2>${esc(a.sessionHub ? a.desc : lead ? 'Lead agent' : a.desc)}</h2>
+      <div><label>${lead ? 'What you asked for' : 'Its job'}</label><p class="job">${a.summary ? esc(a.summary) : a.summarizing ? '<span class="pend">Writing a plain summary…</span>' : a.goal ? inl(a.goal) : 'No brief recorded yet.'}</p>
+        ${a.detail ? `<div class="more">${[['Why it matters', a.detail.why], ['What it will produce', a.detail.makes], ['How we know it worked', a.detail.done]].filter(r => r[1]).map(r => `<div><label>${r[0]}</label><p>${esc(r[1])}</p></div>`).join('')}</div>` : ''}
+        ${cur.s.all && a.sessionHub ? '<button class="go" id="opens">Open this session →</button>' : ''}</div>
+      <div class="now"><label>${a.status === 'active' ? '<i class="pulse"></i>' : ''}${a.status === 'done' ? 'Last step' : 'Right now'}</label><p>${actHtml(last)}</p><small id="iago"></small></div>
+      <div class="duo"><div><label>Running for</label><b id="irun"></b></div><div><label>Steps taken</label><b>${a.tools}</b></div></div>
+      <div class="sec"><label>What it has been up to</label><div class="story">${story(a.activity).map(r => `<div class="${r.say ? 'say' : ''}"><time>${new Date(r.ts).toTimeString().slice(0, 5)}</time><span>${esc(r.say || r.did)}</span></div>`).join('') || '<div><time></time><span>Nothing yet.</span></div>'}</div></div>`;
+    el.scrollTop = keep;
+    if (sheetKey !== key) { sheetKey = key; gsap.from(el.children, { y: 26, opacity: 0, duration: .7, ease: 'power3.out', stagger: .06, delay: .1 }); }
+  }
+  sett($('ist'), label(a, now));
+  sett($('irun'), a.started ? dur((running(a) || lead ? now : a.last) - a.started) : '–');
+  sett($('iago'), last ? (now - last.ts < 4000 ? 'just now' : short(now - last.ts) + ' ago') : '');
+}
+
+// ---------- motion ----------
+gsap.set('#notch', { xPercent: -50, y: -70 }); gsap.set('#sheet', { x: 470, autoAlpha: 0 });
+function boot() {
+  if (booted) return; booted = true;
+  gsap.timeline({ defaults: { ease: 'power3.out' } })
+    .to('#notch', { y: 0, duration: 1.1, ease: 'elastic.out(1,.6)' })
+    .from('#head > *', { y: 34, opacity: 0, duration: .9, stagger: .08 }, .1)
+    .from('.col .card', { y: 46, opacity: 0, scale: .96, duration: .9, stagger: .09 }, .2)
+    .from('#dock', { y: 160, duration: 1, ease: 'expo.out' }, .3)
+    .from('#tr > *', { y: -30, opacity: 0, duration: .7, stagger: .06 }, .3);
+}
+function announce(text) {
+  if (!booted) return; annUntil = Date.now() - skew + 4200;
+  setc($('notch'), ''); sett($('nlead'), text); sett($('nstep'), '');
+  gsap.fromTo('#notch', { height: 78 }, { height: 48, duration: 1.3, ease: 'elastic.out(1,.45)' });
+  gsap.fromTo('.nin', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: .5 });
+}
+document.querySelectorAll('#bg i').forEach(b => gsap.to(b, { x: 'random(-180,180)', y: 'random(-130,130)', scale: 'random(.8,1.3)', duration: 'random(9,15)', ease: 'sine.inOut', repeat: -1, yoyo: true, repeatRefresh: true }));
+addEventListener('pointermove', e => gsap.to('#bg', { x: (e.clientX / innerWidth - .5) * -36, y: (e.clientY / innerHeight - .5) * -24, duration: 1.6, ease: 'power2.out', overwrite: 'auto' }));
+
+function fit(cv) { const w = cv.clientWidth, h = cv.clientHeight, d = devicePixelRatio || 1; if (!w) return null;
+  if (cv.width !== Math.round(w * d)) { cv.width = Math.round(w * d); cv.height = Math.round(h * d); }
+  const g = cv.getContext('2d'); g.setTransform(d, 0, 0, d, 0, 0); g.clearRect(0, 0, w, h); return { g, w, h }; }
+const back = t => 1 + 2.7 * Math.pow(t - 1, 3) + 1.7 * Math.pow(t - 1, 2);
+function spark(now) {
+  const f = fit($('spark')); if (!f) return; const { g, w, h } = f, N = 30, b = new Array(N).fill(0);
+  for (const a of [cur.s.root, ...cur.s.agents]) for (const [ts, c] of a.hist || []) { const i = N - 1 - Math.floor((now - ts) / (WIN / N)); if (c > 1 && i >= 0 && i < N) b[i]++; }
+  const max = Math.max(3, ...b), pt = i => [i / (N - 1) * w, h - 3 - b[i] / max * (h - 8)];
+  g.beginPath(); b.forEach((_, i) => { const [x, y] = pt(i); i ? g.lineTo(x, y) : g.moveTo(x, y); });
+  g.strokeStyle = '#0b0b0c'; g.lineWidth = 1.6; g.lineJoin = 'round'; g.stroke();
+  g.lineTo(w, h); g.lineTo(0, h); g.closePath(); g.globalAlpha = .07; g.fillStyle = '#0b0b0c'; g.fill(); g.globalAlpha = 1;
+}
+gsap.ticker.add(() => {
+  if (!data || document.hidden || !cur) return;
+  const now = Date.now() - skew, nb = $('notch').getBoundingClientRect(), nx = nb.left + nb.width / 2, ny = nb.bottom;
+  spark(now);
+  for (const [key, g] of wireEls) {            // wires follow the capsules while they move
+    const el = nodeEls.get(key); if (!el || !g._a) continue;
+    const gp = gsap.getProperty, sc = gp(el, 'scaleX'), cx = gp(el, 'x') + CW * sc / 2, cy = gp(el, 'y');
+    let px = nx, py = ny; const pe = g._a._p !== 'root' && nodeEls.get(cur.s.key + '#' + g._a._p);
+    if (pe) { const ps = gp(pe, 'scaleX'); px = gp(pe, 'x') + CW * ps / 2; py = gp(pe, 'y') + (pe._a?.hub ? 80 : pe._a?.sessionHub ? 328 : 228) * ps; }
+    const m = (cy - py) * .55, d = `M${px.toFixed(1)} ${py.toFixed(1)}C${px.toFixed(1)} ${(py + m).toFixed(1)},${cx.toFixed(1)} ${(cy - m).toFixed(1)},${cx.toFixed(1)} ${cy.toFixed(1)}`;
+    if (g._d !== d) { g._d = d; g.firstChild.setAttribute('d', d); g.lastChild.setAttribute('d', d); }
+    g.style.opacity = gp(el, 'opacity');
+  }
+});
+</script>
+</body>
+</html>
