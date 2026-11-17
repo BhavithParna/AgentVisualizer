@@ -591,12 +591,14 @@ gsap.ticker.add(() => {
   const nx = innerWidth / 2, gp = gsap.getProperty;
   for (const [key, g] of wireEls) {            // wires follow the capsules while they move
     const el = nodeEls.get(key), a = g._a; if (!el || !a) continue;
-    const sc = gp(el, 'scaleX'), cx = gp(el, 'x') + CW * sc / 2, cy = gp(el, 'y'); let pts;
+    const sc = gp(el, 'scaleX'), cx = gp(el, 'x') + CW * sc / 2, cy = gp(el, 'y');
     const pe = a._p !== 'root' && nodeEls.get(cur.s.key + '#' + a._p);
-    if (pe) { const ps = gp(pe, 'scaleX'), px = gp(pe, 'x') + CW * ps / 2, py = gp(pe, 'y') + (pe._a?.hub ? 80 : pe._a?.sessionHub ? 328 : 228) * ps, ry = cy - 22 * sc; pts = [[px, py], [px, ry], [cx, ry], [cx, cy]]; }
-    else { const r0 = Math.min(lay.rails[0], cy), rr = Math.min(lay.rails[a._row || 0] ?? r0, cy);
-      pts = a._row ? [[nx, 48], [nx, r0], [lay.gx, r0], [lay.gx, rr], [cx, rr], [cx, cy]] : [[nx, 48], [nx, r0], [cx, r0], [cx, cy]]; }
-    const d = rail(pts, 16);
+    const f = n => n.toFixed(1), curve = (px, py) => { const m = (cy - py) * .55; return `M${f(px)} ${f(py)}C${f(px)} ${f(py + m)},${f(cx)} ${f(cy - m)},${f(cx)} ${f(cy)}`; };
+    let d;
+    if (pe) { const ps = gp(pe, 'scaleX'); d = curve(gp(pe, 'x') + CW * ps / 2, gp(pe, 'y') + (pe._a?.hub ? 80 : pe._a?.sessionHub ? 328 : 228) * ps); }
+    else if (!a._row) d = curve(nx, 48);                                   // first row: a soft curve straight from the notch
+    else { const r0 = Math.min(lay.rails[0], cy), rr = Math.min(lay.rails[a._row] ?? r0, cy);   // wrapped rows: swing round the left edge so nothing is crossed
+      d = rail([[nx, 48], [nx, r0], [lay.gx, r0], [lay.gx, rr], [cx, rr], [cx, cy]], 46); }
     if (g._d !== d) { g._d = d; g.firstChild.setAttribute('d', d); g.lastChild.setAttribute('d', d); }
     g.style.opacity = gp(el, 'opacity');
   }
