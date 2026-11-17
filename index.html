@@ -7,7 +7,7 @@
 <style>
 @font-face{font-family:Outfit;src:url(/vendor/outfit.woff2) format("woff2");font-weight:100 900;font-display:swap}
 :root{
-  --ink:#0b0b0c; --ink2:#1b1b1e; --paper:#d3d1cc; --mut:#5f5d59; --soft:#8a8782; --acc:#ff6a1a;
+  --fg:#0b0b0c; --ink:#0b0b0c; --ink2:#1b1b1e; --paper:#d3d1cc; --mut:#5f5d59; --soft:#8a8782; --acc:#ff6a1a;
   --glass:rgba(255,255,255,.36); --edge:rgba(255,255,255,.7);
   --opus1:#ff5a14; --opus2:#ffc79a; --fable1:#6c4bff; --fable2:#d2c6ff; --sonnet1:#1c8dff; --sonnet2:#c4e2ff; --haiku1:#8fcf00; --haiku2:#e8ff9c; --other1:#77757a; --other2:#dedcd8;
   --sans:Outfit,Satoshi,Inter,"Adwaita Sans",system-ui,sans-serif;
@@ -15,7 +15,7 @@
 }
 *{box-sizing:border-box}
 html,body{height:100%;margin:0}
-body{background:var(--paper);color:var(--ink);font:400 14px/1.45 var(--sans);overflow:hidden;-webkit-font-smoothing:antialiased}
+body{background:var(--paper);color:var(--fg);font:400 14px/1.45 var(--sans);overflow:hidden;-webkit-font-smoothing:antialiased}
 h1,h2,h3,p{margin:0;font-weight:inherit} button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
 label,.lab{display:block;font-size:11px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--mut)}
 
@@ -44,7 +44,7 @@ label,.lab{display:block;font-size:11px;font-weight:500;letter-spacing:.09em;tex
 #head p{color:var(--mut);font-size:15px}
 #pills{display:flex;gap:8px;margin-top:16px;overflow-x:auto;scrollbar-width:none}
 .pill{height:34px;padding:0 16px;border-radius:17px;border:1px solid rgba(11,11,12,.25);font-size:13px;white-space:nowrap;flex:none;max-width:190px;overflow:hidden;text-overflow:ellipsis;transition:background .25s,color .25s}
-.pill.on{background:var(--ink);color:#fff;border-color:var(--ink)} .pill:hover:not(.on){background:rgba(255,255,255,.5)}
+.pill.on{background:var(--ink);color:#fff;border-color:var(--fg)} .pill:hover:not(.on){background:rgba(255,255,255,.5)}
 #tr{position:fixed;right:32px;top:26px;z-index:5;display:flex;gap:8px;transition:opacity .4s}
 #conn{display:flex;align-items:center;gap:8px;cursor:default} #conn i{width:7px;height:7px;border-radius:50%;background:#2fbf5b} #conn.off i{background:#e5484d}
 
@@ -55,7 +55,7 @@ label,.lab{display:block;font-size:11px;font-weight:500;letter-spacing:.09em;tex
 .mid{font-size:46px;font-weight:300;letter-spacing:-.04em;line-height:1.05;font-variant-numeric:tabular-nums}
 .card small{display:block;color:var(--mut);font-size:13px;margin-top:4px}
 .row{display:flex;align-items:flex-end;justify-content:space-between;margin-top:8px}
-#arc path{fill:none;stroke-width:7;stroke-linecap:round} #arc .t{stroke:rgba(11,11,12,.12)} #arc .p{stroke:var(--ink)}
+#arc path{fill:none;stroke-width:7;stroke-linecap:round} #arc .t{stroke:rgba(11,11,12,.12)} #arc .p{stroke:var(--fg)}
 #spark{display:block;width:100%;height:54px;margin-top:10px}
 #quote{font-size:15.5px;line-height:1.5;margin-top:10px;display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
 #qwho{margin-top:10px}
@@ -70,7 +70,7 @@ label,.lab{display:block;font-size:11px;font-weight:500;letter-spacing:.09em;tex
 .ag{position:absolute;left:0;top:0;width:160px;cursor:pointer;will-change:transform;text-align:center}
 .cap{height:228px;background:var(--ink);border-radius:46px;padding:9px 9px 0;display:flex;flex-direction:column;transition:transform .35s cubic-bezier(.2,.9,.3,1.4),box-shadow .3s;box-shadow:0 26px 40px -22px rgba(20,10,0,.55)}
 .ag:hover .cap{transform:translateY(-5px) scale(1.025)}
-.ag.sel .cap{box-shadow:0 0 0 4px var(--paper),0 0 0 6.5px var(--ink),0 30px 44px -22px rgba(20,10,0,.6)}
+.ag.sel .cap{box-shadow:0 0 0 4px var(--paper),0 0 0 6.5px var(--fg),0 30px 44px -22px rgba(20,10,0,.6)}
 .well{flex:1;position:relative;border-radius:38px;overflow:hidden}
 .fill{position:absolute;left:0;right:0;bottom:0;height:12%;border-radius:38px;background:linear-gradient(180deg,var(--c1),var(--c2));overflow:hidden}
 .fill::after{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.55) 1px,transparent 1.4px);background-size:7px 7px;mask-image:linear-gradient(180deg,transparent 15%,#000);-webkit-mask-image:linear-gradient(180deg,transparent 15%,#000)}
@@ -113,17 +113,17 @@ label,.lab{display:block;font-size:11px;font-weight:500;letter-spacing:.09em;tex
 #sheet{position:fixed;z-index:20;top:16px;right:16px;bottom:16px;width:420px;border-radius:34px;background:rgba(255,255,255,.62);padding:22px 24px 26px;overflow-y:auto;scrollbar-width:none;visibility:hidden}
 .shTop{display:flex;align-items:center;gap:8px;margin-bottom:22px}
 .tag{height:30px;padding:0 13px;border-radius:15px;display:inline-flex;align-items:center;gap:7px;font-size:12.5px;border:1px solid rgba(11,11,12,.2);white-space:nowrap}
-.tag.k{background:var(--ink);color:#fff;border-color:var(--ink)} .tag.k i{width:7px;height:7px;border-radius:50%;background:var(--c1)}
+.tag.k{background:var(--ink);color:#fff;border-color:var(--fg)} .tag.k i{width:7px;height:7px;border-radius:50%;background:var(--c1)}
 .x{margin-left:auto;width:38px;height:38px;border-radius:50%;background:var(--ink);display:grid;place-items:center;transition:transform .3s cubic-bezier(.2,.9,.3,1.6)} .x:hover{transform:rotate(90deg) scale(1.08)}
 .x svg{width:14px;stroke:#fff;stroke-width:2.4;stroke-linecap:round;fill:none;stroke-linejoin:round}
-.x.nv{margin-left:0;background:rgba(255,255,255,.7)} .x.nv svg{stroke:var(--ink)} .x.nv:hover{transform:scale(1.1)} #prev{margin-left:auto} #close{margin-left:6px}
+.x.nv{margin-left:0;background:rgba(255,255,255,.7)} .x.nv svg{stroke:var(--fg)} .x.nv:hover{transform:scale(1.1)} #prev{margin-left:auto} #close{margin-left:6px}
 .more{margin-top:16px;display:flex;flex-direction:column;gap:1px;border-radius:22px;overflow:hidden}
 .more div{background:rgba(255,255,255,.62);padding:13px 16px} .more p{font-size:14.5px;line-height:1.4;margin-top:3px}
 .go{margin-top:14px;height:42px;padding:0 20px;border-radius:21px;background:var(--ink);color:#fff;font-size:14px;transition:transform .3s cubic-bezier(.2,.9,.3,1.6)} .go:hover{transform:scale(1.04)}
 #sheet h2{font-size:32px;font-weight:400;letter-spacing:-.03em;line-height:1.1;margin-bottom:24px}
 .job{font-size:19px;font-weight:300;line-height:1.42;letter-spacing:-.01em;margin-top:8px}
 .pend{color:var(--mut);animation:breathe 1.4s ease-in-out infinite}
-.link{margin-top:10px;font-size:13px;color:var(--mut);text-decoration:underline;text-underline-offset:3px} .link:hover{color:var(--ink)}
+.link{margin-top:10px;font-size:13px;color:var(--mut);text-decoration:underline;text-underline-offset:3px} .link:hover{color:var(--fg)}
 .brief{margin-top:12px;padding:16px;background:rgba(255,255,255,.6);border-radius:20px;max-height:300px;overflow:auto;font-size:13px}
 .brief h4{margin:14px 0 4px;font-size:12px;font-weight:600} .brief h4:first-child{margin-top:0} .brief p{color:var(--mut);white-space:pre-wrap;word-break:break-word;line-height:1.5}
 code{font:12px ui-monospace,monospace;background:rgba(11,11,12,.07);border-radius:5px;padding:1px 5px;word-break:break-all}
@@ -135,7 +135,7 @@ code{font:12px ui-monospace,monospace;background:rgba(11,11,12,.07);border-radiu
 .story{margin-top:10px;display:flex;flex-direction:column;gap:8px}
 .story div{display:grid;grid-template-columns:42px 1fr;gap:8px;font-size:13px;color:var(--mut);padding:2px 0}
 .story time{color:var(--soft);font-size:12px;font-variant-numeric:tabular-nums;padding-top:1px}
-.story .say{background:rgba(255,255,255,.72);border-radius:18px;padding:12px 14px;color:var(--ink);font-size:14px;line-height:1.45}
+.story .say{background:rgba(255,255,255,.72);border-radius:18px;padding:12px 14px;color:var(--fg);font-size:14px;line-height:1.45}
 .story .say span{display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
 .sec{margin-top:26px}
 
@@ -146,7 +146,53 @@ body.open #colR,body.open #tr{opacity:0;pointer-events:none}
 @media (max-width:1250px){#colR{display:none}#dock{right:calc(24px + var(--sheet))}}
 @media (max-width:980px){#colL{display:none}#dock{left:16px}#head{max-width:44vw}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+
+/* the notch is the navigator: click it and it grows into the list of sessions */
+#notch{height:auto;display:block}
+.nin{height:48px} .chev{width:12px;flex:none;stroke:#8d8b88;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;transition:transform .4s cubic-bezier(.2,.9,.3,1.4)}
+#notch.open .chev{transform:rotate(180deg)} #notch:hover .chev{stroke:#fff}
+#isle{width:0;height:0;overflow:hidden} .il{padding:2px 10px 12px;display:flex;flex-direction:column;gap:2px}
+.il button{display:flex;align-items:center;gap:12px;height:54px;padding:0 14px;border-radius:18px;text-align:left;color:#fff;transition:background .2s}
+.il button:hover{background:rgba(255,255,255,.08)} .il button.on{background:rgba(255,255,255,.05)}
+.il i{width:9px;height:9px;border-radius:50%;flex:none;background:#fff}
+.il span{flex:1;min-width:0} .il b{display:block;font-weight:500;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.il small{display:block;color:#8d8b88;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.il svg{width:16px;flex:none;stroke:var(--acc);stroke-width:2.6;fill:none;stroke-linecap:round;stroke-linejoin:round} .il em{font-style:normal;color:#8d8b88;font-size:18px}
+.il hr{border:0;border-top:1px solid rgba(255,255,255,.09);margin:6px 8px}
+#back{cursor:default;transition:color .2s} #back.can{cursor:pointer} #back.can:hover{color:var(--fg)}
+
+/* ---------- dark theme: flat charcoal, true-black solids, one accent. No glows. ---------- */
+html[data-theme=dark]{--fg:#ecebe8; --ink:#060607; --ink2:#1c1c1f; --paper:#131315; --mut:#9a9894; --soft:#6d6b67; --glass:#1a1a1d; --edge:#29292d}
+html[data-theme=dark] #bg{background:radial-gradient(90% 70% at 50% -10%,#1b1b1e 0%,#131315 60%)}
+html[data-theme=dark] #bg i{display:none}
+html[data-theme=dark] #grain{opacity:.14}
+html[data-theme=dark] .glass{backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:none}
+html[data-theme=dark] .pill{border-color:#34343a}
+html[data-theme=dark] .pill.on{background:var(--fg);color:#0b0b0c;border-color:var(--fg)}
+html[data-theme=dark] .pill:hover:not(.on){background:#1f1f23}
+html[data-theme=dark] #arc .t{stroke:#2c2c31}
+html[data-theme=dark] #wires path{stroke:#3a3a40}
+html[data-theme=dark] #wires .flow{stroke:var(--fg)}
+html[data-theme=dark] .cap{box-shadow:0 0 0 1px #26262a}
+html[data-theme=dark] .ag.sel .cap{box-shadow:0 0 0 4px var(--paper),0 0 0 6px var(--fg)}
+html[data-theme=dark] #dock{box-shadow:0 0 0 1px #26262a}
+html[data-theme=dark] .note{background:#131315} html[data-theme=dark] .note:hover{background:#1c1c1f}
+html[data-theme=dark] #sheet{background:#18181b}
+html[data-theme=dark] .tag{border-color:#34343a}
+html[data-theme=dark] .tag.k{border-color:#26262a}
+html[data-theme=dark] .go{background:var(--fg);color:#0b0b0c}
+html[data-theme=dark] .x{background:var(--fg)} html[data-theme=dark] .x svg{stroke:#0b0b0c}
+html[data-theme=dark] .x.nv{background:#242428} html[data-theme=dark] .x.nv svg{stroke:var(--fg)}
+html[data-theme=dark] .now{box-shadow:0 0 0 1px #26262a}
+html[data-theme=dark] .duo div,html[data-theme=dark] .more div,html[data-theme=dark] .story .say{background:#212125}
+html[data-theme=dark] code{background:#2a2a2f}
+/* theme switch */
+#theme{width:34px;padding:0;display:grid;place-items:center}
+#theme svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#theme .sun,html[data-theme=dark] #theme .moon{display:none} html[data-theme=dark] #theme .sun{display:block}
+html.theming *{transition:background-color .6s,color .6s,border-color .6s,box-shadow .6s,stroke .6s,opacity .6s!important}
 </style>
+<script>document.documentElement.dataset.theme = localStorage.theme || (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light');</script>
 </head>
 <body>
 <div id="bg"><i class="b1"></i><i class="b2"></i><i class="b3"></i></div><div id="grain"></div>
@@ -154,10 +200,10 @@ body.open #colR,body.open #tr{opacity:0;pointer-events:none}
 <div id="stage" class="live"></div>
 <div id="hint" class="live">A fuller capsule means a busier agent</div>
 
-<div id="notch"><div class="nin"><i class="pulse"></i><b id="nlead"></b><span id="nstep"></span></div></div>
+<div id="notch"><div class="nin" id="nin"><i class="pulse"></i><b id="nlead"></b><span id="nstep"></span><svg class="chev" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></div><div id="isle"><div class="il"></div></div></div>
 
-<header id="head" class="live"><span class="lab">Session</span><h1 id="st"></h1><p id="ss"></p><div id="pills"></div></header>
-<div id="tr"><button class="pill" id="finb">Show finished</button><span class="pill" id="conn"><i></i><span>Live</span></span></div>
+<header id="head" class="live"><button class="lab" id="back">Session</button><h1 id="st"></h1><p id="ss"></p></header>
+<div id="tr"><button class="pill" id="theme" aria-label="Switch between light and dark" title="Light / dark"><svg class="moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg><svg class="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.3 5.3l1.7 1.7M17 17l1.7 1.7M5.3 18.7L7 17M17 7l1.7-1.7"/></svg></button><button class="pill" id="finb">Show finished</button><span class="pill" id="conn"><i></i><span>Live</span></span></div>
 
 <div class="col live" id="colL">
   <div class="card glass"><label>Working now</label>
@@ -234,6 +280,7 @@ function briefHtml(t) {
 
 // ---------- state ----------
 let data = null, skew = 0, sel = null, pin = null, cur = null, briefOpen = false, booted = false, annUntil = 0, items = new Map();
+let lastViews = [], lastAll = null, isleOpen = false;
 const wasRunning = new Set(), doneAt = new Map(), known = new Set(), nodeEls = new Map(), wireEls = new Map(), laneEls = new Map(), pillEls = new Map();
 const running = a => a.status === 'active' || a.status === 'waiting';
 const cls = a => a.status + (a.status === 'active' && a.activity.at(-1)?.k === 'think' ? ' think' : '');
@@ -244,7 +291,7 @@ const seth = (el, h) => { if (el._h !== h) { el._h = h; el.innerHTML = h; return
 function recon(parent, map, list, make, upd) {
   const seen = new Set();
   for (const it of list) { let el = map.get(it.key); if (!el) { el = make(it); map.set(it.key, el); parent.appendChild(el); } upd(el, it); seen.add(it.key); }
-  for (const [k, el] of map) if (!seen.has(k)) { gsap.killTweensOf(el); el.remove(); map.delete(k); }
+  for (const [k, el] of map) if (!seen.has(k)) { gsap.killTweensOf(el); map.delete(k); if (map === nodeEls) { el.style.pointerEvents = 'none'; gsap.to(el, { x: innerWidth / 2 - 30, y: -40, scale: .2, opacity: 0, duration: .45, ease: 'power2.in', onComplete: () => el.remove() }); } else el.remove(); }
 }
 function count(el, to, f = fmt) { if (el._to === to) return; el._to = to; el._o = el._o || { v: 0 }; gsap.to(el._o, { v: to, duration: 1.1, ease: 'power3.out', onUpdate: () => el.textContent = f(el._o.v) }); }
 
@@ -256,7 +303,7 @@ es.onerror = () => conn(false);
 const conn = ok => { setc($('conn'), 'pill' + (ok ? '' : ' off')); sett($('conn').lastChild, ok ? 'Live' : 'Reconnecting'); };
 setInterval(() => data && render(), 1000);
 addEventListener('resize', () => data && render());
-addEventListener('keydown', e => { if (e.key === 'Escape') pick(null); if (e.key === 'ArrowRight') step(1); if (e.key === 'ArrowLeft') step(-1); });
+addEventListener('keydown', e => { if (e.key === 'Escape') { if (isleOpen) isle(false); else if (sel) pick(null); else if (pin && lastAll) { pin = null; render(); } } if (e.key === 'ArrowRight') step(1); if (e.key === 'ArrowLeft') step(-1); });
 function step(d) {
   if (!cur) return;
   const order = [...(cur.s.all ? [] : ['root']), ...cur.list.filter(a => !a.hub).map(a => a.id)].map(id => cur.s.key + '#' + id), i = order.indexOf(sel);
@@ -268,12 +315,33 @@ document.addEventListener('click', e => {
   if (e.target.closest('#prev')) return step(-1);
   if (e.target.closest('#next')) return step(1);
   if (e.target.id === 'opens') { pin = items.get(sel).a.skey; sel = null; return render(); }
-  const p = e.target.closest('.pill[data-s]'); if (p) { pin = p.dataset.s; sel = null; return render(); }
-  if (e.target.closest('#notch')) return cur && !cur.s.all && pick(cur.s.key + '#root');
+  const go = e.target.closest('[data-go]');
+  if (go) { isle(false); if (go.dataset.go === 'lead') return pick(cur.s.key + '#root'); pin = go.dataset.go === '*' ? null : go.dataset.go; sel = null; return render(); }
+  if (e.target.closest('#back')) { if (lastAll && pin) { pin = null; sel = null; render(); } return; }
+  if (e.target.closest('#notch')) return isle(!isleOpen);
+  if (isleOpen) isle(false);
   const k = e.target.closest('[data-key]'), hub = k && items.get(k.dataset.key)?.a;
+  if (hub?.sessionHub) { pin = hub.skey; sel = null; return render(); }   // a lead in the combined view is a door into its session
   if (k) return pick(k.dataset.key === sel ? null : k.dataset.key);
   if (e.target.id === 'stage') pick(null);
 });
+const TICKSVG = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+function fillIsle(now) {
+  if (!cur) return; const rows = [], r = cur.s.root;
+  if (!cur.s.all) rows.push(`<button data-go="lead"><i style="background:var(--${fam(r.model)}1)"></i><span><b>Lead agent details</b><small>${esc(mname(r.model))} · ${esc(label(r, now))}</small></span><em>›</em></button><hr>`);
+  if (lastAll) rows.push(`<button data-go="*" class="${cur.s.all ? 'on' : ''}"><i></i><span><b>All sessions</b><small>${plural(lastAll.n, 'agent')} working across ${lastViews.length} sessions</small></span>${cur.s.all ? TICKSVG : ''}</button>`);
+  for (const v of lastViews) rows.push(`<button data-go="${esc(v.s.key)}" class="${v === cur ? 'on' : ''}"><i style="background:var(--${fam(v.s.root.model)}1)"></i><span><b>${esc(v.s.title)}</b><small>${esc(v.s.project)} · ${v.n ? plural(v.n, 'agent') + ' working' : 'idle'}</small></span>${v === cur ? TICKSVG : ''}</button>`);
+  seth($('isle').firstChild, rows.join(''));
+}
+function isle(open) {
+  if (open === isleOpen || (open && !cur)) return; isleOpen = open;
+  const p = $('isle'); $('notch').classList.toggle('open', open);
+  if (open) {
+    fillIsle(Date.now() - skew); const w = Math.max(430, $('nin').offsetWidth); p.firstChild.style.width = w + 'px';
+    gsap.to(p, { width: w, height: 'auto', duration: .75, ease: 'elastic.out(1,.8)', overwrite: true });
+    gsap.from(p.firstChild.children, { y: -14, opacity: 0, duration: .45, ease: 'power3.out', stagger: .045, delay: .06 });
+  } else gsap.to(p, { width: 0, height: 0, duration: .35, ease: 'power3.inOut', overwrite: true });
+}
 function pick(k) { sel = k; briefOpen = false; render(); }
 
 // One synthetic "session" holding every live session: each real session becomes a small hub under the notch.
@@ -287,7 +355,7 @@ function buildAll(views) {
     n += v.n;
   }
   const roots = views.map(v => v.s.root);
-  const root = { id: 'root', type: 'main', status: 'waiting', model: null, activity: [], hist: [], tools: roots.reduce((t, r) => t + r.tools, 0), started: 0 };
+  const root = { id: 'root', type: 'main', status: 'waiting', model: null, activity: [], hist: [], tools: roots.reduce((t, r) => t + r.tools, 0), started: 0, last: Math.max(...roots.map(r => r.last || 0)) };
   return { s: { key: '*', all: true, project: 'All sessions', title: `${views.length} Claude Code sessions, leads and helpers together`, root, agents }, list, n };
 }
 
@@ -315,6 +383,7 @@ function render() {
   views.sort((a, b) => b.n - a.n || b.s.last - a.s.last);
   const allView = views.length > 1 ? buildAll(views) : null;
   if (allView) for (const a of allView.list) items.set('*#' + a.id, { a, v: allView, key: '*#' + a.id });
+  lastViews = views; lastAll = allView;
   cur = views.find(v => v.s.key === pin) || allView || views[0] || null;
   if (sel && (!items.has(sel) || items.get(sel).v !== cur)) sel = null;
   document.body.classList.toggle('empty', !cur);
@@ -324,18 +393,18 @@ function render() {
 
   const s = cur.s, real = s.agents.filter(a => !a.hub), all = [s.root, ...real], r = s.root;
   sett($('st'), s.project); sett($('ss'), s.title);
-  recon($('pills'), pillEls, allView ? [allView, ...views].map(v => ({ key: v.s.key, v })) : [], it => { const b = document.createElement('button'); b.dataset.s = it.key; return b; },
-    (b, { v }) => { setc(b, 'pill' + (v === cur ? ' on' : '')); const dup = views.filter(o => o.s.project === v.s.project).length > 1; sett(b, `${v.s.all ? 'All sessions' : dup ? v.s.title : v.s.project} · ${v.n}`); b.title = v.s.title; });
+  sett($('back'), allView && !s.all ? '‹  All sessions' : 'Session'); $('back').classList.toggle('can', !!allView && !s.all);
+  if (isleOpen) fillIsle(now);
   if (now > annUntil && s.all) { setc($('notch'), ''); sett($('nlead'), 'All sessions'); sett($('nstep'), `${plural(cur.n, 'agent')} working`); }
   else if (now > annUntil) { setc($('notch'), r.status === 'active' ? '' : 'quiet'); sett($('nlead'), mname(r.model) + ' is leading'); sett($('nstep'), r.status === 'active' ? actText(r.activity.at(-1)) : cur.h ? `waiting on ${plural(cur.h, 'helper')}` : 'idle'); }
 
   const fin = real.filter(a => a.status === 'done').length;
-  count($('k1'), cur.n); sett($('k1s'), `${fin} of ${real.length} finished`);
+  count($('k1'), cur.n); sett($('k1s'), real.length ? `${fin} of ${real.length} helpers finished` : 'no helpers running');
   const off = 157.1 * (1 - (real.length ? fin / real.length : 0)), arc = $('arc').lastElementChild;
   if (arc._o !== off) { arc._o = off; gsap.to(arc, { attr: { 'stroke-dashoffset': off }, duration: 1.2, ease: 'power3.out' }); }
   count($('k3'), all.reduce((t, a) => t + a.tools, 0));
   sett($('k4'), dur(now - (real.length ? Math.min(...real.map(a => a.started || now)) : s.root.last || now)));
-  sett($('k4s'), real.length ? 'since the first helper started' : 'since the lead last did something');
+  sett($('k4s'), real.length ? 'since the first helper started' : 'since anything last happened');
   feed(now); files(now);
   stage(now); boot();
 }
@@ -363,25 +432,50 @@ function files(now) {
 }
 
 // ---------- agents hanging from the notch ----------
+let lay = { gx: 0, rails: [0] };
 function stage(now) {
   const s = cur.s, list = cur.list, ids = new Set(list.map(a => a.id)), kids = new Map();
   for (const a of list) { const p = ids.has(a.parent) ? a.parent : 'root'; a._p = p; (kids.get(p) || kids.set(p, []).get(p)).push(a); }
-  const hint = $('hint'); sett(hint, list.length ? ('Click an agent for details · ← → moves between them · a fuller capsule is a busier agent') : 'This session has no helpers running, the lead is working alone');
+  const hint = $('hint'); sett(hint, list.length ? (s.all ? 'Click a session’s lead to step inside it · click a helper for details · a fuller capsule is a busier agent' : 'Click an agent for details · ← → moves between them · a fuller capsule is a busier agent') : 'This session has no helpers running, the lead is working alone');
   if (!list.length) { hint.style.left = '50%'; hint.style.top = '46%'; recon($('stage'), nodeEls, [], 0, 0); recon($('wires'), wireEls, [], 0, 0); return; }
-  let leaf = 0, maxD = 1; const pos = new Map();
-  const place = (a, d) => { maxD = Math.max(maxD, d); const k = kids.get(a.id); let x;
-    if (k) { const xs = k.map(c => place(c, d + 1)); x = (xs[0] + xs.at(-1)) / 2; } else x = leaf++ * (CW + GX);
-    pos.set(a.id, { x, d }); return x; };
-  (kids.get('root') || []).forEach(a => place(a, 1));
-  const W = innerWidth, open = !!sel, rc = id => { const e = $(id); return getComputedStyle(e).display === 'none' ? null : e.getBoundingClientRect(); };
-  const L = rc('colL'), R = rc('colR'), D = $('dock').getBoundingClientRect();
-  const left = (L ? L.right : 0) + 28, right = open ? W - 464 : (R ? R.left : W) - 28, top = 104, bottom = D.top - 44;
+
+  // each top-level agent and everything under it is one block; blocks wrap onto extra rows when one row would get too small
+  const pos = new Map(); let maxD = 1;
+  const blocks = (kids.get('root') || []).map((top, bi) => {
+    let leaf = 0;
+    const place = (a, d) => { maxD = Math.max(maxD, d); const k = kids.get(a.id); let x;
+      if (k) { const xs = k.map(c => place(c, d + 1)); x = (xs[0] + xs.at(-1)) / 2; } else x = leaf++ * (CW + GX);
+      pos.set(a.id, { x, d, bi }); return x; };
+    place(top, 1); return { w: leaf * (CW + GX) - GX };
+  });
   const tall = []; for (const a of list) if (!a.hub) tall[pos.get(a.id).d] = 1;
   const yo = [0, 0]; for (let d = 1; d <= maxD; d++) yo[d + 1] = yo[d] + (tall[d] ? CH : 84) + GY;
-  const bw = leaf * (CW + GX) - GX, bh = yo[maxD + 1] - GY;
-  const sc = Math.max(.34, Math.min(1.12, (right - left) / bw, (bottom - top) / bh));
-  const ox = (left + right) / 2 - bw * sc / 2, oy = top + Math.max(0, (bottom - top - bh * sc)) * .42;
-  hint.style.left = (left + right) / 2 + 'px'; hint.style.top = Math.min(bottom + 12, oy + bh * sc + 10) + 'px';
+  const bh = yo[maxD + 1] - GY, BG = GX * 1.6, RG = 70, total = blocks.reduce((t, b) => t + b.w + BG, -BG);
+
+  const W = innerWidth, open = !!sel, rc = id => { const e = $(id); return getComputedStyle(e).display === 'none' ? null : e.getBoundingClientRect(); };
+  const L = rc('colL'), R = rc('colR'), D = $('dock').getBoundingClientRect(), H = $('head').getBoundingClientRect();
+  const left = (L ? L.right : 0) + 28, right = open ? W - 464 : (R ? R.left : W) - 28, bottom = D.top - 44;
+  const pack = n => {
+    const rows = Array.from({ length: n }, () => ({ items: [], w: -BG })); let c = 0;
+    blocks.forEach((b, bi) => { const r = rows[Math.min(n - 1, Math.floor((c + b.w / 2) / (total / n)))]; r.items.push(bi); r.w += b.w + BG; c += b.w + BG; });
+    const used = rows.filter(r => r.items.length); return { rows: used, mw: Math.max(...used.map(r => r.w)), h: used.length * bh + (used.length - 1) * RG };
+  };
+  const solve = top => {
+    let best = null;
+    for (let n = 1; n <= Math.min(blocks.length, 4); n++) {
+      const p = pack(n); p.gut = p.rows.length > 1 ? 40 : 0;
+      p.sc = Math.max(.3, Math.min(1.12, (right - left - p.gut) / p.mw, (bottom - top) / p.h));
+      if (!best || p.sc > best.sc * 1.1) best = p;
+    }
+    best.ox = (left + right + best.gut) / 2 - best.mw * best.sc / 2; best.oy = top + Math.max(0, bottom - top - best.h * best.sc) * .42;
+    return best;
+  };
+  let P = solve(108);
+  if (P.ox - 50 < H.right && P.oy - 44 < H.bottom + 10) P = solve(Math.round(H.bottom + 62));   // keep the wires clear of the title
+  const sc = P.sc, bpos = [];
+  P.rows.forEach((row, ri) => { let c = (P.mw - row.w) / 2; for (const bi of row.items) { bpos[bi] = { x: P.ox + c * sc, y: P.oy + ri * (bh + RG) * sc, ri }; c += blocks[bi].w + BG; } });
+  lay = { gx: P.ox - 30, rails: P.rows.map((_, ri) => Math.max(66, P.oy + ri * (bh + RG) * sc - 30 * sc)) };
+  hint.style.left = (left + right) / 2 + 'px'; hint.style.top = Math.min(bottom + 12, P.oy + P.h * sc + 10) + 'px';
 
   let fresh = 0;
   recon($('stage'), nodeEls, list.map(a => ({ key: s.key + '#' + a.id, a })), it => {
@@ -390,19 +484,29 @@ function stage(now) {
     gsap.set(el, { x: innerWidth / 2 - CW * sc / 2, y: -60, scale: sc * .3, opacity: 0, transformOrigin: '0 0' });
     return el;
   }, (el, { key, a }) => {
-    const p = pos.get(a.id), x = Math.round(ox + p.x * sc), y = Math.round(oy + yo[p.d] * sc), t = `${x},${y},${sc.toFixed(3)}`;
-    el._a = a; setc(el, `ag ${cls(a)}${a.hub ? ' hub' : ''}${sel === key ? ' sel' : ''}`); tint(el, a);
+    const p = pos.get(a.id), b = bpos[p.bi], x = Math.round(b.x + p.x * sc), y = Math.round(b.y + yo[p.d] * sc), t = `${x},${y},${sc.toFixed(3)}`;
+    a._row = b.ri; el._a = a; setc(el, `ag ${cls(a)}${a.hub ? ' hub' : ''}${sel === key ? ' sel' : ''}`); tint(el, a);
     if (a._out) { if (!el._leaving) { el._leaving = 1; gsap.to(el, { opacity: 0, y: '+=50', scale: sc * .7, duration: .6, ease: 'power2.in', overwrite: true }); } return; }
-    if (el._t !== t) { const isNew = !el._t; el._t = t; gsap.to(el, { x, y, scale: sc, opacity: 1, duration: isNew ? 1.1 : .9, ease: isNew ? 'back.out(1.5)' : 'power3.out', delay: isNew ? .07 * fresh++ : 0, overwrite: true }); }
+    if (el._t !== t) { const isNew = !el._t; el._t = t; gsap.to(el, { x, y, scale: sc, opacity: 1, duration: isNew ? 1.1 : .9, ease: isNew ? 'back.out(1.5)' : 'power3.out', delay: isNew ? Math.min(.6, .05 * fresh++) : 0, overwrite: true }); }
     if (a.hub) { sett(el.firstChild, a.sessionHub ? a.desc : 'Group of helpers'); sett(el.querySelector('.mm span'), a.sub || ''); return; }
     const busy = a.hist.reduce((n, h) => n + (h[0] > now - 60e3), 0), lvl = a.status === 'done' ? 100 : a.status !== 'active' ? 9 : Math.min(100, 24 + busy * 9);
     if (el._lvl !== lvl) { el._lvl = lvl; gsap.to(el.querySelector('.fill'), { height: lvl + '%', duration: 1.4, ease: 'elastic.out(1,.75)' }); }
-    sett(el.querySelector('.tm'), a.started ? clock((running(a) ? now : a.last) - a.started) : '');
+    sett(el.querySelector('.tm'), a.sessionHub ? (a.status === 'active' ? 'working' : a.status === 'waiting' ? 'leading' : 'idle ' + short(now - a.last)) : a.started ? clock((running(a) ? now : a.last) - a.started) : '');
     sett(el.querySelector('.nm'), a.desc); sett(el.querySelector('.mm span'), `${mname(a.model)} · ${label(a, now)}`);
     sett(el.querySelector('.stp'), a.status === 'active' ? actText(a.activity.at(-1)) : '');
   });
   recon($('wires'), wireEls, list.map(a => ({ key: s.key + '#' + a.id, a })), () => { const g = document.createElementNS('http://www.w3.org/2000/svg', 'g'); g.innerHTML = '<path/><path class="flow"/>'; return g; },
     (g, { a }) => { const c = a.status === 'active' ? 'active' : ''; if (g.getAttribute('class') !== c) g.setAttribute('class', c); g._a = a; });
+}
+// a polyline with rounded corners: wires run as tidy rails instead of free curves
+function rail(pts, r) {
+  const f = n => Math.round(n * 10) / 10; pts = pts.filter((p, i) => !i || Math.hypot(p[0] - pts[i - 1][0], p[1] - pts[i - 1][1]) > .5);
+  let d = `M${f(pts[0][0])} ${f(pts[0][1])}`;
+  for (let i = 1; i < pts.length - 1; i++) {
+    const [x0, y0] = pts[i - 1], [x1, y1] = pts[i], [x2, y2] = pts[i + 1], l1 = Math.hypot(x1 - x0, y1 - y0), l2 = Math.hypot(x2 - x1, y2 - y1), q = Math.min(r, l1 / 2, l2 / 2);
+    d += `L${f(x1 - (x1 - x0) / l1 * q)} ${f(y1 - (y1 - y0) / l1 * q)}Q${f(x1)} ${f(y1)} ${f(x1 + (x2 - x1) / l2 * q)} ${f(y1 + (y2 - y1) / l2 * q)}`;
+  }
+  const e = pts.at(-1); return d + `L${f(e[0])} ${f(e[1])}`;
 }
 
 // ---------- detail sheet ----------
@@ -436,6 +540,18 @@ function sheet(now) {
   sett($('iago'), last ? (now - last.ts < 4000 ? 'just now' : short(now - last.ts) + ' ago') : '');
 }
 
+// ---------- theme ----------
+let FG = '#0b0b0c';
+const root = document.documentElement, readFg = () => FG = getComputedStyle(root).getPropertyValue('--fg').trim() || FG;
+readFg();
+matchMedia('(prefers-color-scheme:dark)').addEventListener('change', e => { if (!localStorage.theme) { root.dataset.theme = e.matches ? 'dark' : 'light'; readFg(); } });
+$('theme').onclick = () => {
+  root.classList.add('theming'); root.dataset.theme = localStorage.theme = root.dataset.theme === 'dark' ? 'light' : 'dark'; readFg();
+  gsap.fromTo('#theme svg', { rotate: -120, scale: .3 }, { rotate: 0, scale: 1, duration: .8, ease: 'back.out(2)' });
+  gsap.fromTo('#bg', { opacity: .2 }, { opacity: 1, duration: 1, ease: 'power2.out' });
+  setTimeout(() => root.classList.remove('theming'), 750);
+};
+
 // ---------- motion ----------
 gsap.set('#notch', { xPercent: -50, y: -70 }); gsap.set('#sheet', { x: 470, autoAlpha: 0 });
 function boot() {
@@ -450,7 +566,7 @@ function boot() {
 function announce(text) {
   if (!booted) return; annUntil = Date.now() - skew + 4200;
   setc($('notch'), ''); sett($('nlead'), text); sett($('nstep'), '');
-  gsap.fromTo('#notch', { height: 78 }, { height: 48, duration: 1.3, ease: 'elastic.out(1,.45)' });
+  gsap.fromTo('#nin', { height: 78 }, { height: 48, duration: 1.3, ease: 'elastic.out(1,.45)' });
   gsap.fromTo('.nin', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: .5 });
 }
 document.querySelectorAll('#bg i').forEach(b => gsap.to(b, { x: 'random(-180,180)', y: 'random(-130,130)', scale: 'random(.8,1.3)', duration: 'random(9,15)', ease: 'sine.inOut', repeat: -1, yoyo: true, repeatRefresh: true }));
@@ -465,19 +581,22 @@ function spark(now) {
   for (const a of [cur.s.root, ...cur.s.agents]) for (const [ts, c] of a.hist || []) { const i = N - 1 - Math.floor((now - ts) / (WIN / N)); if (c > 1 && i >= 0 && i < N) b[i]++; }
   const max = Math.max(3, ...b), pt = i => [i / (N - 1) * w, h - 3 - b[i] / max * (h - 8)];
   g.beginPath(); b.forEach((_, i) => { const [x, y] = pt(i); i ? g.lineTo(x, y) : g.moveTo(x, y); });
-  g.strokeStyle = '#0b0b0c'; g.lineWidth = 1.6; g.lineJoin = 'round'; g.stroke();
-  g.lineTo(w, h); g.lineTo(0, h); g.closePath(); g.globalAlpha = .07; g.fillStyle = '#0b0b0c'; g.fill(); g.globalAlpha = 1;
+  g.strokeStyle = FG; g.lineWidth = 1.6; g.lineJoin = 'round'; g.stroke();
+  g.lineTo(w, h); g.lineTo(0, h); g.closePath(); g.globalAlpha = .07; g.fillStyle = FG; g.fill(); g.globalAlpha = 1;
 }
 gsap.ticker.add(() => {
   if (!data || document.hidden || !cur) return;
-  const now = Date.now() - skew, nb = $('notch').getBoundingClientRect(), nx = nb.left + nb.width / 2, ny = nb.bottom;
+  const now = Date.now() - skew;
   spark(now);
+  const nx = innerWidth / 2, gp = gsap.getProperty;
   for (const [key, g] of wireEls) {            // wires follow the capsules while they move
-    const el = nodeEls.get(key); if (!el || !g._a) continue;
-    const gp = gsap.getProperty, sc = gp(el, 'scaleX'), cx = gp(el, 'x') + CW * sc / 2, cy = gp(el, 'y');
-    let px = nx, py = ny; const pe = g._a._p !== 'root' && nodeEls.get(cur.s.key + '#' + g._a._p);
-    if (pe) { const ps = gp(pe, 'scaleX'); px = gp(pe, 'x') + CW * ps / 2; py = gp(pe, 'y') + (pe._a?.hub ? 80 : pe._a?.sessionHub ? 328 : 228) * ps; }
-    const m = (cy - py) * .55, d = `M${px.toFixed(1)} ${py.toFixed(1)}C${px.toFixed(1)} ${(py + m).toFixed(1)},${cx.toFixed(1)} ${(cy - m).toFixed(1)},${cx.toFixed(1)} ${cy.toFixed(1)}`;
+    const el = nodeEls.get(key), a = g._a; if (!el || !a) continue;
+    const sc = gp(el, 'scaleX'), cx = gp(el, 'x') + CW * sc / 2, cy = gp(el, 'y'); let pts;
+    const pe = a._p !== 'root' && nodeEls.get(cur.s.key + '#' + a._p);
+    if (pe) { const ps = gp(pe, 'scaleX'), px = gp(pe, 'x') + CW * ps / 2, py = gp(pe, 'y') + (pe._a?.hub ? 80 : pe._a?.sessionHub ? 328 : 228) * ps, ry = cy - 22 * sc; pts = [[px, py], [px, ry], [cx, ry], [cx, cy]]; }
+    else { const r0 = Math.min(lay.rails[0], cy), rr = Math.min(lay.rails[a._row || 0] ?? r0, cy);
+      pts = a._row ? [[nx, 48], [nx, r0], [lay.gx, r0], [lay.gx, rr], [cx, rr], [cx, cy]] : [[nx, 48], [nx, r0], [cx, r0], [cx, cy]]; }
+    const d = rail(pts, 16);
     if (g._d !== d) { g._d = d; g.firstChild.setAttribute('d', d); g.lastChild.setAttribute('d', d); }
     g.style.opacity = gp(el, 'opacity');
   }

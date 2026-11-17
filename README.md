@@ -18,6 +18,8 @@ and needs no setup inside Claude Code.
   Esc closes the sheet.
 - **Live feed** along the bottom is what the agents are saying, newest first.
 - **Files being changed** lists the files they edited most recently.
+- **Light and dark** themes: the moon / sun button in the top right switches between them. It follows your system
+  setting until you choose.
 
 ## Requirements
 
